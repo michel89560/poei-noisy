@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission 2 — Premiers Pas Bureautiques | Noisy-le-Grand FC</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+  :root {
+    --bleu-fonce:#1B3A5C;--bleu-vif:#0099CC;--bleu-clair:#E8F4FA;
+    --vert:#27AE60;--orange:#F39C12;--rouge:#E74C3C;
+    --gris-fond:#F5F7FA;--gris-texte:#555;
+    --word:#2B579A;--excel:#217346;--ppt:#D24726;
+    --ombre:0 4px 20px rgba(27,58,92,.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Outfit',Calibri,sans-serif;background:var(--gris-fond);color:#333;min-height:100vh}
+  .header{background:linear-gradient(135deg,var(--bleu-fonce),#2C5A8C);color:#fff;padding:16px 30px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 10px rgba(0,0,0,.15);position:sticky;top:0;z-index:100}
+  .header .logo-text{font-size:18px;font-weight:700}.header .logo-sub{font-size:12px;opacity:.8;font-weight:300}
+  .progress-pill{background:rgba(255,255,255,.2);border-radius:20px;padding:6px 16px;font-weight:500;font-size:13px}
+  .container{max-width:860px;margin:0 auto;padding:30px 20px}
+  .screen{display:none}.screen.active{display:block;animation:fadeIn .4s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+  .welcome-card,.transition-card,.results-card{background:#fff;border-radius:20px;padding:50px 40px;text-align:center;box-shadow:var(--ombre);margin-top:30px}
+  .badge{display:inline-block;border-radius:30px;padding:8px 20px;font-size:13px;font-weight:600;margin-bottom:20px;letter-spacing:1px;text-transform:uppercase}
+  .badge-word{background:#EBF0F9;color:var(--word)}.badge-excel{background:#E8F5EC;color:var(--excel)}.badge-ppt{background:#FCEAE6;color:var(--ppt)}
+  h1{font-size:30px;font-weight:800;color:var(--bleu-fonce);margin-bottom:12px}
+  h2{font-size:26px;font-weight:700;color:var(--bleu-fonce);margin-bottom:10px}
+  p{color:var(--gris-texte);font-size:15px;line-height:1.6;margin-bottom:20px;max-width:640px;margin-left:auto;margin-right:auto}
+  input[type="text"]{display:block;width:100%;max-width:400px;margin:0 auto 25px;padding:14px 20px;border:2px solid #ddd;border-radius:12px;font-size:16px;font-family:inherit;text-align:center}
+  input:focus{outline:none;border-color:var(--bleu-vif)}
+  .btn{display:inline-block;padding:14px 36px;border:none;border-radius:12px;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:all .25s}
+  .btn-primary{background:linear-gradient(135deg,var(--bleu-vif),#007AA3);color:#fff;box-shadow:0 4px 15px rgba(0,153,204,.3)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,153,204,.4)}
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .btn-word{background:linear-gradient(135deg,var(--word),#1E3F73);color:#fff}
+  .btn-excel{background:linear-gradient(135deg,var(--excel),#185A36);color:#fff}
+  .btn-ppt{background:linear-gradient(135deg,var(--ppt),#A83920);color:#fff}
+  .btn-secondary{background:var(--bleu-clair);color:var(--bleu-fonce)}
+  .btn:hover{transform:translateY(-2px)}
+  .atelier-chips{display:flex;gap:15px;justify-content:center;margin:25px 0;flex-wrap:wrap}
+  .atelier-chip{border-radius:12px;padding:14px 20px;text-align:center;min-width:140px}
+  .atelier-chip.word{background:#EBF0F9;border:2px solid var(--word)}
+  .atelier-chip.excel{background:#E8F5EC;border:2px solid var(--excel)}
+  .atelier-chip.ppt{background:#FCEAE6;border:2px solid var(--ppt)}
+  .chip-icon{font-size:28px;margin-bottom:4px}.chip-title{font-size:14px;font-weight:600}.chip-time{font-size:12px;color:var(--gris-texte)}
+  .progress-bar-wrap{background:#E8EDF2;border-radius:8px;height:8px;margin-bottom:25px;overflow:hidden}
+  .progress-bar-fill{height:100%;border-radius:8px;transition:width .4s ease;width:0%}
+  .fill-word{background:linear-gradient(90deg,var(--word),#4A7BC7)}
+  .fill-excel{background:linear-gradient(90deg,var(--excel),#2D9B5E)}
+  .fill-ppt{background:linear-gradient(90deg,var(--ppt),#E8704B)}
+  .section-banner{border-radius:14px;padding:18px 24px;margin-bottom:20px;display:flex;align-items:center;gap:15px;color:#fff}
+  .section-banner.word{background:linear-gradient(135deg,var(--word),#4A7BC7)}
+  .section-banner.excel{background:linear-gradient(135deg,var(--excel),#2D9B5E)}
+  .section-banner.ppt{background:linear-gradient(135deg,var(--ppt),#E8704B)}
+  .banner-icon{font-size:32px}.banner-title{font-size:18px;font-weight:700}.banner-sub{font-size:13px;opacity:.85}
+  .question-card{background:#fff;border-radius:16px;padding:28px;margin-bottom:16px;box-shadow:var(--ombre);border-left:4px solid var(--bleu-vif);transition:border-color .3s}
+  .question-card.answered{border-left-color:var(--vert)}
+  .question-card.word-q{border-left-color:var(--word)}.question-card.excel-q{border-left-color:var(--excel)}.question-card.ppt-q{border-left-color:var(--ppt)}
+  .q-number{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+  .q-number.word{color:var(--word)}.q-number.excel{color:var(--excel)}.q-number.ppt{color:var(--ppt)}
+  .q-text{font-size:16px;font-weight:600;color:var(--bleu-fonce);margin-bottom:15px;line-height:1.4}
+  .q-action{background:#FFF8E1;border:2px solid #FFD54F;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:14px;color:#6D5E00;line-height:1.5}
+  .q-action strong{color:#B8860B}
+  .options{display:flex;flex-direction:column;gap:10px}
+  .option{display:flex;align-items:center;gap:12px;padding:13px 18px;border:2px solid #E8EDF2;border-radius:10px;cursor:pointer;transition:all .2s;font-size:15px}
+  .option:hover{border-color:var(--bleu-vif);background:var(--bleu-clair)}
+  .option.selected{border-color:var(--bleu-vif);background:var(--bleu-clair);font-weight:500}
+  .radio{width:20px;height:20px;border:2px solid #ccc;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+  .option.selected .radio{border-color:var(--bleu-vif);background:var(--bleu-vif)}
+  .option.selected .radio::after{content:'';width:8px;height:8px;background:#fff;border-radius:50%}
+  .mission-nav{display:flex;justify-content:space-between;align-items:center;margin-top:25px;padding-top:20px;border-top:1px solid #eee}
+  .question-counter{font-size:14px;color:var(--gris-texte);font-weight:500}
+  .total-score{text-align:center;padding:25px;background:linear-gradient(135deg,var(--bleu-fonce),#2C5A8C);border-radius:16px;color:#fff;margin-bottom:25px}
+  .total-label{font-size:14px;opacity:.8;margin-bottom:5px}.total-value{font-size:48px;font-weight:800}.total-max{font-size:16px;opacity:.7}
+  .score-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:30px}
+  .score-item{border-radius:14px;padding:20px;text-align:center}
+  .score-label{font-size:13px;font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+  .score-value{font-size:36px;font-weight:800;line-height:1;margin-bottom:4px}.score-max{font-size:13px;opacity:.7}
+  .score-word{background:#EBF0F9;color:var(--word)}.score-excel{background:#E8F5EC;color:var(--excel)}.score-ppt{background:#FCEAE6;color:var(--ppt)}
+  .export-section{text-align:center;margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .emoji{font-size:52px;margin-bottom:15px}
+  @media(max-width:600px){.container{padding:15px 12px}.welcome-card,.transition-card,.results-card{padding:30px 20px}h1{font-size:24px}.question-card{padding:20px}.header{padding:12px 15px}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div><div class="logo-text">⚽ Noisy-le-Grand FC</div><div class="logo-sub">Skills Accompagnement</div></div>
+  <span class="progress-pill" id="progressPill">Atelier 1/3</span>
+</div>
+<div class="container">
+
+<!-- ═══ ACCUEIL ═══ -->
+<div class="screen active" id="screenWelcome">
+  <div class="welcome-card">
+    <div class="badge badge-word">🖥️ Ateliers bureautiques</div>
+    <h1>Premiers pas bureautiques</h1>
+    <p>On teste vos réflexes sur les 3 outils du quotidien au club. Certaines questions sont directes, d'autres vous demandent d'<strong>ouvrir un logiciel</strong> ou de <strong>chercher sur internet</strong> pour trouver la réponse.</p>
+    <p style="font-size:14px;color:var(--orange)">⚡ Prenez votre temps sur les questions « va chercher » — c'est normal que ça prenne plus longtemps.</p>
+    <input type="text" id="inputNom" placeholder="Entrez votre nom et prénom" autofocus>
+    <div class="atelier-chips">
+      <div class="atelier-chip word"><div class="chip-icon">📝</div><div class="chip-title">Word</div><div class="chip-time">≈ 40 min</div></div>
+      <div class="atelier-chip excel"><div class="chip-icon">📊</div><div class="chip-title">Excel</div><div class="chip-time">≈ 40 min</div></div>
+      <div class="atelier-chip ppt"><div class="chip-icon">📽️</div><div class="chip-title">PowerPoint</div><div class="chip-time">≈ 35 min</div></div>
+    </div>
+    <button class="btn btn-word" id="btnStart" disabled onclick="startWord()">📝 Commencer — Atelier Word</button>
+  </div>
+</div>
+
+<!-- ═══ WORD ═══ -->
+<div class="screen" id="screenWord">
+  <div class="section-banner word"><div class="banner-icon">📝</div><div><div class="banner-title">Atelier Word</div><div class="banner-sub">18 questions • mix direct + exploration • ≈ 40 min</div></div></div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill fill-word" id="progressWord"></div></div>
+  <div id="qWord"></div>
+  <div class="mission-nav"><span class="question-counter" id="counterWord"></span><button class="btn btn-word" onclick="finishWord()">Valider — Atelier Word ✓</button></div>
+</div>
+<div class="screen" id="screenTransW">
+  <div class="transition-card"><div class="emoji">✅</div><h2>Atelier Word terminé !</h2><p>Bien joué <span class="pN"></span> ! On passe à Excel.</p><button class="btn btn-excel" onclick="startExcel()">📊 Atelier Excel →</button></div>
+</div>
+
+<!-- ═══ EXCEL ═══ -->
+<div class="screen" id="screenExcel">
+  <div class="section-banner excel"><div class="banner-icon">📊</div><div><div class="banner-title">Atelier Excel</div><div class="banner-sub">18 questions • mix direct + exploration • ≈ 40 min</div></div></div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill fill-excel" id="progressExcel"></div></div>
+  <div id="qExcel"></div>
+  <div class="mission-nav"><span class="question-counter" id="counterExcel"></span><button class="btn btn-excel" onclick="finishExcel()">Valider — Atelier Excel ✓</button></div>
+</div>
+<div class="screen" id="screenTransE">
+  <div class="transition-card"><div class="emoji">👍</div><h2>Atelier Excel terminé !</h2><p>Dernier atelier <span class="pN"></span> — PowerPoint !</p><button class="btn btn-ppt" onclick="startPpt()">📽️ Atelier PowerPoint →</button></div>
+</div>
+
+<!-- ═══ PPT ═══ -->
+<div class="screen" id="screenPpt">
+  <div class="section-banner ppt"><div class="banner-icon">📽️</div><div><div class="banner-title">Atelier PowerPoint</div><div class="banner-sub">15 questions • mix direct + exploration • ≈ 35 min</div></div></div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill fill-ppt" id="progressPpt"></div></div>
+  <div id="qPpt"></div>
+  <div class="mission-nav"><span class="question-counter" id="counterPpt"></span><button class="btn btn-ppt" onclick="finishPpt()">Terminer les ateliers ✓</button></div>
+</div>
+
+<!-- ═══ RÉSULTATS ═══ -->
+<div class="screen" id="screenResults">
+  <div class="results-card">
+    <h2>🎉 Ateliers terminés, <span class="pN"></span> !</h2>
+    <p style="margin-bottom:30px">Voici vos résultats bureautiques :</p>
+    <div class="total-score"><div class="total-label">Score global</div><div class="total-value" id="totalScore">0</div><div class="total-max">/ 30</div></div>
+    <div class="score-grid" id="scoreGrid"></div>
+    <div class="export-section">
+      <button class="btn btn-primary" onclick="copyBilan()">📋 Copier le bilan</button>
+      <button class="btn btn-secondary" onclick="window.print()">🖨️ Imprimer</button>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+// ═══════════════════════════════════════════
+//  QUESTIONS WORD (18 questions)
+//  🔵 = question sèche  🟡 = va chercher
+// ═══════════════════════════════════════════
+const Q_WORD = [
+  // 🔵 sèches
+  {q:"Le raccourci pour mettre un texte en gras dans Word :",opts:["Ctrl+G","Ctrl+B","Ctrl+I","Ctrl+U"],correct:1},
+  {q:"Pour enregistrer un document, le raccourci est :",opts:["Ctrl+S","Ctrl+E","Ctrl+P","Ctrl+N"],correct:0},
+  {q:"Ctrl+Z dans Word sert à :",opts:["Zoomer","Fermer","Annuler la dernière action","Coller"],correct:2},
+  {q:"Pour justifier un texte (aligné des deux côtés) :",opts:["Ctrl+L","Ctrl+E","Ctrl+J","Ctrl+R"],correct:2},
+  {q:"L'extension d'un fichier Word est :",opts:[".xls",".ppt",".docx",".pdf"],correct:2},
+  {q:"Pour insérer une image dans un document Word :",opts:["Accueil > Coller","Insertion > Image","Fichier > Ouvrir","Révision > Commentaire"],correct:1},
+  {q:"Pour insérer un saut de page (commencer sur une nouvelle page) :",opts:["Appuyer sur Entrée plusieurs fois","Insertion > Saut de page","Mise en page > Orientation","Fichier > Nouveau"],correct:1},
+  {q:"Pour vérifier l'orthographe dans Word :",opts:["Révision > Orthographe","Insertion > Symbole","Accueil > Rechercher","Ce n'est pas possible dans Word"],correct:0},
+  {q:"Pour créer un nouveau document vierge :",opts:["Ctrl+N","Ctrl+O","Ctrl+P","Ctrl+W"],correct:0},
+  // 🟡 va chercher
+  {q:"Ouvrez Word. Allez dans l'onglet « Insertion ». Combien de boutons y a-t-il dans le groupe « Illustrations » ?",action:"🔎 Ouvrez Microsoft Word, cliquez sur l'onglet Insertion et comptez les boutons du groupe « Illustrations ».",opts:["3","4","5","6"],correct:2},
+  {q:"Ouvrez Word. Tapez le mot « Noisy-le-Grand FC » et appliquez-lui la police « Arial Black ». Quelle est la taille de police par défaut quand vous ouvrez un document vierge ?",action:"🔎 Ouvrez un document Word vierge et regardez la taille de police indiquée dans la barre d'outils.",opts:["10","11","12","14"],correct:1},
+  {q:"Ouvrez Word. Tapez 3 lignes de texte. Sélectionnez tout (Ctrl+A). Dans l'onglet Accueil, quel bouton permet de changer l'interligne (espace entre les lignes) ?",action:"🔎 Sélectionnez du texte dans Word et cherchez le bouton d'interligne dans la section Paragraphe.",opts:["Le bouton avec des flèches haut/bas à côté de lignes","Le bouton A avec une flèche rouge","Le pot de peinture","Le bouton Aa"],correct:0},
+  {q:"Ouvrez Word. Allez dans Mise en page > Orientation. Quelles sont les deux options proposées ?",action:"🔎 Ouvrez l'onglet Mise en page dans Word et cliquez sur Orientation.",opts:["Vertical / Horizontal","Portrait / Paysage","A4 / A3","Normal / Large"],correct:1},
+  {q:"Ouvrez Word. Allez dans Insertion > En-tête. À quoi sert cette fonctionnalité ?",action:"🔎 Explorez le menu Insertion > En-tête dans Word.",opts:["Ajouter un titre au document","Ajouter un texte qui apparaît en haut de chaque page","Insérer un logo","Numéroter les paragraphes"],correct:1},
+  {q:"Ouvrez Word et tapez : « Le club accueille 200 licenciés ». Faites un clic droit sur le mot « accueille ». Que propose le menu contextuel ?",action:"🔎 Tapez la phrase dans Word, puis faites un clic droit sur « accueille ».",opts:["Uniquement Copier/Coller","Des synonymes, la police, le paragraphe…","Rien, le clic droit ne fonctionne pas sur un mot","Uniquement la suppression du mot"],correct:1},
+  {q:"Ouvrez Word. Tapez 5 lignes. Allez dans Fichier > Imprimer. Sans imprimer, combien de pages votre document fait-il (affiché en bas de l'aperçu) ?",action:"🔎 Tapez quelques lignes dans Word, puis allez dans Fichier > Imprimer pour voir l'aperçu.",opts:["0","1","2","Impossible à voir sans imprimante"],correct:1},
+  {q:"Ouvrez Word. Utilisez le raccourci Ctrl+H. Quelle fenêtre s'ouvre ?",action:"🔎 Dans un document Word, tapez Ctrl+H.",opts:["L'aide de Word","Rechercher et remplacer","L'historique des versions","Les propriétés du document"],correct:1},
+  {q:"Cherchez sur internet : quel est le raccourci Word pour sélectionner tout le texte d'un document ?",action:"🔎 Cherchez sur internet : « raccourci Word sélectionner tout ».",opts:["Ctrl+T","Ctrl+S","Ctrl+A","Ctrl+E"],correct:2},
+];
+
+// ═══════════════════════════════════════════
+//  QUESTIONS EXCEL (18 questions)
+// ═══════════════════════════════════════════
+const Q_EXCEL = [
+  // 🔵 sèches
+  {q:"Dans Excel, une cellule est identifiée par :",opts:["Un numéro seul (15)","Une lettre + un numéro (B3)","Un nom personnalisé","Une couleur"],correct:1},
+  {q:"La formule pour additionner les cellules A1 à A10 est :",opts:["=ADD(A1:A10)","=SOMME(A1:A10)","=TOTAL(A1:A10)","=A1+A10"],correct:1},
+  {q:"Le format de fichier natif d'Excel est :",opts:[".docx",".xlsx",".pptx",".csv"],correct:1},
+  {q:"Si une cellule affiche « ##### », cela signifie :",opts:["Erreur de formule","Colonne trop étroite","Cellule verrouillée","Fichier corrompu"],correct:1},
+  {q:"Pour sélectionner toute la feuille de calcul :",opts:["Ctrl+A","Ctrl+S","Ctrl+F","Ctrl+Z"],correct:0},
+  {q:"Pour trier des données par ordre alphabétique :",opts:["Accueil > Trier","Données > Trier","Insertion > Filtre","Ctrl+T"],correct:1},
+  {q:"La touche « Suppr » quand une cellule est sélectionnée :",opts:["Supprime la ligne entière","Efface le contenu de la cellule","Supprime la feuille","Supprime le fichier"],correct:1},
+  {q:"Pour mettre un fond de couleur dans une cellule :",opts:["Ctrl+B","Bouton pot de peinture (couleur de remplissage)","Insertion > Graphique","Données > Validation"],correct:1},
+  {q:"Que signifie le symbole « : » dans la formule =SOMME(A1:A10) ?",opts:["Division","De A1 à A10 (plage de cellules)","Multiplication","Concaténation"],correct:1},
+  // 🟡 va chercher
+  {q:"Ouvrez Excel. Tapez =SOMME(1;2;3) dans la cellule A1 et appuyez sur Entrée. Quel résultat s'affiche ?",action:"🔎 Ouvrez Excel, cliquez sur A1, tapez la formule et validez avec Entrée.",opts:["3","5","6","Erreur"],correct:2},
+  {q:"Ouvrez Excel. Tapez =NB(1;2;3;4;5) dans la cellule A1. Quel résultat s'affiche ?",action:"🔎 Ouvrez Excel et tapez cette formule dans A1.",opts:["5","15","1","Erreur"],correct:0},
+  {q:"Ouvrez Excel. Dans la cellule A1 tapez « Nom », en B1 « Prénom », en C1 « Âge ». Saisissez 3 lignes de données fictives. Quelle lettre se trouve dans la barre de formule quand vous cliquez sur la cellule C2 ?",action:"🔎 Créez un petit tableau dans Excel et observez la barre de formule.",opts:["Le contenu de la cellule C2","C2","La formule =C2","Rien"],correct:0},
+  {q:"Ouvrez Excel. Tapez « 10 » en A1 et « 20 » en A2. En A3, tapez =A1+A2. Changez A1 en « 50 ». Que vaut A3 maintenant ?",action:"🔎 Testez dans Excel : la formule se recalcule-t-elle automatiquement ?",opts:["30","50","70","Il faut recalculer manuellement"],correct:2},
+  {q:"Ouvrez Excel. Tapez une date (ex : 15/03/2026) dans A1. Faites un clic droit > Format de cellule. Combien de catégories de format sont proposées dans l'onglet « Nombre » ?",action:"🔎 Explorez les formats de cellule dans Excel.",opts:["5-6","8-9","11-12","Plus de 15"],correct:2},
+  {q:"Ouvrez Excel. Sélectionnez les cellules A1 à D1. Allez dans Accueil et trouvez le bouton « Fusionner et centrer ». Que fait ce bouton ?",action:"🔎 Sélectionnez plusieurs cellules et essayez le bouton Fusionner.",opts:["Il supprime les cellules","Il combine les cellules en une seule grande cellule","Il copie le contenu","Il trie les cellules"],correct:1},
+  {q:"Ouvrez Excel. En A1 tapez « Joueur », en A2 « Diallo », en A3 « Albert », en A4 « Martin ». Sélectionnez A1:A4. Allez dans Données > Trier. Par défaut, le tri proposé est :",action:"🔎 Essayez de trier une colonne dans Excel.",opts:["Du plus grand au plus petit","De A à Z","Du plus ancien au plus récent","Aléatoire"],correct:1},
+  {q:"Cherchez sur internet : quelle formule Excel permet de compter le nombre de cellules contenant le texte « U13 » dans une plage ?",action:"🔎 Cherchez « formule Excel compter cellules contenant texte ».",opts:["=SOMME.SI","=NB.SI","=COMPTE","=CHERCHE"],correct:1},
+  {q:"Ouvrez Excel. Tapez =AUJOURDHUI() dans A1. Quel résultat s'affiche ?",action:"🔎 Tapez cette formule dans Excel et observez.",opts:["Le mot « aujourd'hui »","La date du jour","L'heure actuelle","Une erreur"],correct:1},
+];
+
+// ═══════════════════════════════════════════
+//  QUESTIONS POWERPOINT (15 questions)
+// ═══════════════════════════════════════════
+const Q_PPT = [
+  // 🔵 sèches
+  {q:"Pour ajouter une nouvelle diapositive :",opts:["Fichier > Nouveau","Accueil > Nouvelle diapositive","Insertion > Image","Diaporama > Lancer"],correct:1},
+  {q:"Raccourci pour lancer la présentation en plein écran :",opts:["F1","F5","F12","Ctrl+P"],correct:1},
+  {q:"L'extension d'un fichier PowerPoint est :",opts:[".docx",".xlsx",".pptx",".pdf"],correct:2},
+  {q:"Pour insérer une image sur une diapositive :",opts:["Accueil > Coller","Insertion > Image","Création > Thème","Diaporama > Minutage"],correct:1},
+  {q:"Pour une présentation efficace, il vaut mieux :",opts:["Écrire tout son discours sur les diapos","Mots-clés, images et mise en page aérée","Que des tableaux de chiffres","Maximum de polices et couleurs"],correct:1},
+  {q:"Pour ajouter une transition entre deux diapositives :",opts:["Onglet Accueil","Onglet Transitions","Onglet Insertion","Onglet Affichage"],correct:1},
+  {q:"Pour ajouter des notes que seul le présentateur voit :",opts:["Dans le corps de la diapositive","Dans la zone « Notes » en bas de l'éditeur","Dans un fichier Word séparé","Ce n'est pas possible"],correct:1},
+  // 🟡 va chercher
+  {q:"Ouvrez PowerPoint. Créez une nouvelle présentation vierge. Combien de dispositions (layouts) sont proposées quand vous cliquez sur « Nouvelle diapositive » ?",action:"🔎 Ouvrez PowerPoint, cliquez sur la flèche sous « Nouvelle diapositive » dans l'onglet Accueil.",opts:["4-5","7-9","11-12","Plus de 15"],correct:1},
+  {q:"Ouvrez PowerPoint. Allez dans l'onglet « Création ». Combien de thèmes prédéfinis sont visibles sans faire défiler ?",action:"🔎 Cliquez sur l'onglet Création et comptez les thèmes visibles.",opts:["4-6","8-12","15-20","Plus de 20"],correct:1},
+  {q:"Ouvrez PowerPoint. Créez une diapositive. Cliquez sur « Création > Mise en forme de l'arrière-plan ». Quel type de remplissage est sélectionné par défaut ?",action:"🔎 Explorez les options d'arrière-plan dans PowerPoint.",opts:["Remplissage uni","Remplissage dégradé","Remplissage image","Remplissage motif"],correct:0},
+  {q:"Ouvrez PowerPoint. Allez dans Insertion > Formes. Quelle catégorie de formes est listée en premier ?",action:"🔎 Cliquez sur Insertion > Formes et regardez les catégories.",opts:["Flèches pleines","Rectangles","Formes récemment utilisées","Lignes"],correct:2},
+  {q:"Ouvrez PowerPoint. Créez 2 diapositives. Allez dans l'onglet Transitions. Appliquez une transition « Fondu » à la diapositive 2. Quel symbole apparaît à côté de la diapositive dans le panneau de gauche ?",action:"🔎 Appliquez une transition et observez le panneau des diapositives.",opts:["Une étoile ⭐","Un petit triangle / symbole d'animation","Rien ne change","Un point d'exclamation"],correct:0},
+  {q:"Cherchez sur internet : en quelle année a été créé le Noisy-le-Grand Football Club ?",action:"🔎 Cherchez sur Google : « Noisy-le-Grand Football Club date création ».",opts:["1947","1957","1968","1975"],correct:2},
+  {q:"Ouvrez PowerPoint. Insérez une zone de texte (Insertion > Zone de texte). Tapez « Noisy FC ». Faites un clic droit sur la zone de texte. Quelle option permet de changer la couleur de fond de la zone ?",action:"🔎 Insérez une zone de texte, faites un clic droit et explorez le menu.",opts:["Modifier le texte","Format de la forme / Mise en forme","Copier","Supprimer"],correct:1},
+  {q:"Ouvrez PowerPoint. Appuyez sur Ctrl+M. Que se passe-t-il ?",action:"🔎 Testez le raccourci Ctrl+M dans PowerPoint.",opts:["Le fichier se ferme","Une nouvelle diapositive est ajoutée","Le mode présentateur se lance","Rien"],correct:1},
+];
+
+// ═══════════════════════════════════════════
+//  MOTEUR
+// ═══════════════════════════════════════════
+let pName='';
+const ans={word:{},excel:{},ppt:{}};
+
+document.getElementById('inputNom').addEventListener('input',function(){document.getElementById('btnStart').disabled=this.value.trim().length<2});
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
+
+function renderQCM(containerId,questions,sec,fillClass){
+  const c=document.getElementById(containerId); c.innerHTML='';
+  questions.forEach((q,i)=>{
+    const card=document.createElement('div'); card.className=`question-card ${sec}-q`; card.id=`q-${sec}-${i}`;
+    const action=q.action?`<div class="q-action">${q.action}</div>`:'';
+    const opts=q.opts.map((o,oi)=>`<div class="option" onclick="pick(this,'${sec}',${i},${oi})"><div class="radio"></div><span>${o}</span></div>`).join('');
+    card.innerHTML=`<div class="q-number ${sec}">Question ${i+1} / ${questions.length}${q.action?' — 🔎 VA CHERCHER':''}</div>${action}<div class="q-text">${q.q}</div><div class="options">${opts}</div>`;
+    c.appendChild(card);
+  });
+  upd(sec);
+}
+
+function pick(el,sec,qi,oi){
+  el.closest('.question-card').querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');el.closest('.question-card').classList.add('answered');
+  ans[sec][qi]=oi; upd(sec);
+}
+
+function upd(sec){
+  const map={word:Q_WORD,excel:Q_EXCEL,ppt:Q_PPT};
+  const qs=map[sec],done=Object.keys(ans[sec]).length,pct=Math.round(done/qs.length*100);
+  const id=sec.charAt(0).toUpperCase()+sec.slice(1);
+  document.getElementById('progress'+id).style.width=pct+'%';
+  document.getElementById('counter'+id).textContent=`${done} / ${qs.length} répondues`;
+}
+
+function startWord(){pName=document.getElementById('inputNom').value.trim();document.querySelectorAll('.pN').forEach(e=>e.textContent=pName);renderQCM('qWord',Q_WORD,'word','fill-word');show('screenWord');document.getElementById('progressPill').textContent='Atelier 1/3 — Word'}
+function finishWord(){show('screenTransW');document.getElementById('progressPill').textContent='✅ Word terminé'}
+function startExcel(){renderQCM('qExcel',Q_EXCEL,'excel','fill-excel');show('screenExcel');document.getElementById('progressPill').textContent='Atelier 2/3 — Excel'}
+function finishExcel(){show('screenTransE');document.getElementById('progressPill').textContent='✅ Excel terminé'}
+function startPpt(){renderQCM('qPpt',Q_PPT,'ppt','fill-ppt');show('screenPpt');document.getElementById('progressPill').textContent='Atelier 3/3 — PowerPoint'}
+function finishPpt(){showRes()}
+
+function calc(qs,sec){let ok=0;qs.forEach((q,i)=>{if(ans[sec][i]===q.correct)ok++});return Math.round(ok/qs.length*100)/10}
+function sc(v){return v>=7?'score-word':v>=4?'score-excel':'score-ppt'}
+
+
+// ENVOI AUTOMATIQUE GOOGLE SHEET
+var SHEET_URL='https://script.google.com/macros/s/AKfycbxmqueUUDjoFAvaYAAyzbSg4hn3x73gD8hh68q0oxSJpOoHVQEgs9eaxQy_Jdl8rGjk/exec';
+function sendToSheet(sW,sE,sP){
+  var url=SHEET_URL+'?prenom='+encodeURIComponent(pName)+'&parcours=POSITIONNEMENT_2&jour=POSITIONNEMENT_BUREAUTIQUE&score_word='+sW+'&score_excel='+sE+'&score_ppt='+sP+'&score='+Math.round((sW+sE+sP)*10)/10+'&total=30';
+  var img=new Image(); img.src=url;
+}
+
+function showRes(){
+  const sW=calc(Q_WORD,'word'),sE=calc(Q_EXCEL,'excel'),sP=calc(Q_PPT,'ppt');
+  const tot=Math.round((sW+sE+sP)*10)/10;
+  document.getElementById('totalScore').textContent=tot.toFixed(1);
+  document.getElementById('scoreGrid').innerHTML=`
+    <div class="score-item score-word"><div class="score-label">📝 Word</div><div class="score-value">${sW.toFixed(1)}</div><div class="score-max">/ 10</div></div>
+    <div class="score-item score-excel"><div class="score-label">📊 Excel</div><div class="score-value">${sE.toFixed(1)}</div><div class="score-max">/ 10</div></div>
+    <div class="score-item score-ppt"><div class="score-label">📽️ PowerPoint</div><div class="score-value">${sP.toFixed(1)}</div><div class="score-max">/ 10</div></div>`;
+  sendToSheet(sW,sE,sP);show('screenResults');document.getElementById('progressPill').textContent='🎉 Ateliers terminés !';
+}
+
+function copyBilan(){
+  const sW=calc(Q_WORD,'word'),sE=calc(Q_EXCEL,'excel'),sP=calc(Q_PPT,'ppt'),tot=(sW+sE+sP).toFixed(1);
+  const txt=`BILAN POSITIONNEMENT — MISSION 2 (Bureautique)\nNoisy-le-Grand FC × Skills Accompagnement\n${'═'.repeat(48)}\nApprenant : ${pName}\nDate : ${new Date().toLocaleDateString('fr-FR')}\n\nSCORES\n───────────────────────────────────\n📝 Word :        ${sW.toFixed(1)} / 10\n📊 Excel :       ${sE.toFixed(1)} / 10\n📽️ PowerPoint : ${sP.toFixed(1)} / 10\n───────────────────────────────────\nTOTAL :          ${tot} / 30\n${'═'.repeat(48)}`;
+  navigator.clipboard.writeText(txt).then(()=>alert('✅ Bilan copié !')).catch(()=>{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('✅ Bilan copié !')});
+}
+</script>
+</body>
+</html>

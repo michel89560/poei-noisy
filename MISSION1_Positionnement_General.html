@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission 1 — Intégration au Club | Noisy-le-Grand FC</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+  :root {
+    --bleu-fonce:#1B3A5C;--bleu-vif:#0099CC;--bleu-clair:#E8F4FA;
+    --vert:#27AE60;--orange:#F39C12;--rouge:#E74C3C;
+    --gris-fond:#F5F7FA;--gris-texte:#555;--blanc:#FFFFFF;
+    --violet:#8E44AD;--violet-clair:#F3E8FA;
+    --ombre:0 4px 20px rgba(27,58,92,.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Outfit',Calibri,sans-serif;background:var(--gris-fond);color:#333;min-height:100vh}
+  .header{background:linear-gradient(135deg,var(--bleu-fonce),#2C5A8C);color:#fff;padding:16px 30px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 10px rgba(0,0,0,.15);position:sticky;top:0;z-index:100}
+  .header .logo-text{font-size:18px;font-weight:700}.header .logo-sub{font-size:12px;opacity:.8;font-weight:300}
+  .progress-pill{background:rgba(255,255,255,.2);border-radius:20px;padding:6px 16px;font-weight:500;font-size:13px}
+  .container{max-width:860px;margin:0 auto;padding:30px 20px}
+  .screen{display:none}.screen.active{display:block;animation:fadeIn .4s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+  .welcome-card,.transition-card,.results-card{background:#fff;border-radius:20px;padding:50px 40px;text-align:center;box-shadow:var(--ombre);margin-top:30px}
+  .badge{display:inline-block;background:var(--bleu-clair);color:var(--bleu-vif);border-radius:30px;padding:8px 20px;font-size:13px;font-weight:600;margin-bottom:20px;letter-spacing:1px;text-transform:uppercase}
+  h1{font-size:30px;font-weight:800;color:var(--bleu-fonce);margin-bottom:12px}
+  h2{font-size:26px;font-weight:700;color:var(--bleu-fonce);margin-bottom:10px}
+  p{color:var(--gris-texte);font-size:15px;line-height:1.6;margin-bottom:20px;max-width:640px;margin-left:auto;margin-right:auto}
+  input[type="text"]{display:block;width:100%;max-width:400px;margin:0 auto 25px;padding:14px 20px;border:2px solid #ddd;border-radius:12px;font-size:16px;font-family:inherit;text-align:center}
+  input:focus{outline:none;border-color:var(--bleu-vif)}
+  .mission-overview{display:flex;gap:12px;justify-content:center;margin:25px 0;flex-wrap:wrap}
+  .mission-chip{background:var(--bleu-clair);border-radius:12px;padding:12px 16px;text-align:center;min-width:130px}
+  .chip-icon{font-size:24px;margin-bottom:4px}.chip-title{font-size:13px;font-weight:600;color:var(--bleu-fonce)}.chip-time{font-size:11px;color:var(--gris-texte)}
+  .btn{display:inline-block;padding:14px 36px;border:none;border-radius:12px;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:all .25s}
+  .btn-primary{background:linear-gradient(135deg,var(--bleu-vif),#007AA3);color:#fff;box-shadow:0 4px 15px rgba(0,153,204,.3)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,153,204,.4)}
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .btn-secondary{background:var(--bleu-clair);color:var(--bleu-fonce)}
+  .btn-violet{background:linear-gradient(135deg,var(--violet),#6C3483);color:#fff;box-shadow:0 4px 15px rgba(142,68,173,.3)}
+  .emoji{font-size:52px;margin-bottom:15px}
+  .progress-bar-wrap{background:#E8EDF2;border-radius:8px;height:8px;margin-bottom:25px;overflow:hidden}
+  .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--bleu-vif),var(--vert));border-radius:8px;transition:width .4s ease;width:0%}
+  .fill-violet{background:linear-gradient(90deg,var(--violet),#AF7AC5)}
+  .question-card{background:#fff;border-radius:16px;padding:28px;margin-bottom:18px;box-shadow:var(--ombre);border-left:4px solid var(--bleu-vif);transition:border-color .3s}
+  .question-card.answered{border-left-color:var(--vert)}
+  .question-card.club-q{border-left-color:var(--violet)}
+  .q-number{font-size:12px;font-weight:600;color:var(--bleu-vif);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+  .q-number.violet{color:var(--violet)}
+  .q-context{background:var(--bleu-clair);border-radius:10px;padding:14px 18px;margin-bottom:15px;font-size:14px;color:var(--bleu-fonce);line-height:1.55;border-left:3px solid var(--bleu-vif)}
+  .q-text{font-size:16px;font-weight:600;color:var(--bleu-fonce);margin-bottom:15px;line-height:1.4}
+  .q-action{background:#F3E8FA;border:2px solid #D2B4DE;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:14px;color:#6C3483;line-height:1.5}
+  .options{display:flex;flex-direction:column;gap:10px}
+  .option{display:flex;align-items:center;gap:12px;padding:13px 18px;border:2px solid #E8EDF2;border-radius:10px;cursor:pointer;transition:all .2s;font-size:15px}
+  .option:hover{border-color:var(--bleu-vif);background:var(--bleu-clair)}
+  .option.selected{border-color:var(--bleu-vif);background:var(--bleu-clair);font-weight:500}
+  .radio{width:20px;height:20px;border:2px solid #ccc;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+  .option.selected .radio{border-color:var(--bleu-vif);background:var(--bleu-vif)}
+  .option.selected .radio::after{content:'';width:8px;height:8px;background:#fff;border-radius:50%}
+  .free-input{width:100%;padding:12px 16px;border:2px solid #E8EDF2;border-radius:10px;font-family:inherit;font-size:15px;resize:none;transition:border-color .3s}
+  .free-input:focus{outline:none;border-color:var(--bleu-vif)}
+  .auto-eval{display:flex;gap:10px;flex-wrap:wrap}
+  .auto-eval .level{flex:1;min-width:130px;padding:14px;border:2px solid #E8EDF2;border-radius:10px;text-align:center;cursor:pointer;transition:all .2s}
+  .auto-eval .level:hover{border-color:var(--bleu-vif)}
+  .auto-eval .level.selected{border-color:var(--bleu-vif);background:var(--bleu-clair)}
+  .level-icon{font-size:24px;margin-bottom:6px}.level-text{font-size:13px;font-weight:500;color:var(--bleu-fonce)}
+  .mission-nav{display:flex;justify-content:space-between;align-items:center;margin-top:25px;padding-top:20px;border-top:1px solid #eee}
+  .question-counter{font-size:14px;color:var(--gris-texte);font-weight:500}
+  .total-score{text-align:center;padding:25px;background:linear-gradient(135deg,var(--bleu-fonce),#2C5A8C);border-radius:16px;color:#fff;margin-bottom:25px}
+  .total-label{font-size:14px;opacity:.8;margin-bottom:5px}.total-value{font-size:48px;font-weight:800}.total-max{font-size:16px;opacity:.7}
+  .score-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:30px}
+  .score-item{border-radius:14px;padding:20px;text-align:center}
+  .score-label{font-size:13px;font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+  .score-value{font-size:36px;font-weight:800;line-height:1;margin-bottom:4px}.score-max{font-size:13px;opacity:.7}
+  .score-green{background:#E8F8EE;color:var(--vert)}.score-orange{background:#FEF3E2;color:var(--orange)}.score-red{background:#FDE8E8;color:var(--rouge)}
+  .export-section{text-align:center;margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  @media(max-width:600px){.container{padding:15px 12px}.welcome-card,.transition-card,.results-card{padding:30px 20px}h1{font-size:24px}.question-card{padding:20px}.mission-overview{flex-direction:column;align-items:center}.header{padding:12px 15px}.header .logo-text{font-size:15px}.score-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div><div class="logo-text">⚽ Noisy-le-Grand FC</div><div class="logo-sub">Skills Accompagnement</div></div>
+  <span class="progress-pill" id="progressPill">Mission 1/4</span>
+</div>
+<div class="container">
+
+<!-- ═══ ACCUEIL ═══ -->
+<div class="screen active" id="screenWelcome">
+  <div class="welcome-card">
+    <div class="badge">🏟️ Votre première journée</div>
+    <h1>Bienvenue au Noisy-le-Grand FC !</h1>
+    <p>Vous venez d'intégrer l'équipe administrative du club. Le président <strong>Moussa SIDIBE</strong> vous confie <strong>4 missions</strong> pour mieux vous connaître et adapter votre parcours de formation.</p>
+    <p style="font-size:14px;color:var(--orange)">⚡ Ce n'est pas un examen — il n'y a pas de piège. Répondez naturellement, à votre rythme.</p>
+    <input type="text" id="inputNom" placeholder="Entrez votre nom et prénom" autofocus>
+    <div class="mission-overview">
+      <div class="mission-chip"><div class="chip-icon">📧</div><div class="chip-title">Français</div><div class="chip-time">≈ 40 min</div></div>
+      <div class="mission-chip"><div class="chip-icon">💻</div><div class="chip-title">Culture Numérique</div><div class="chip-time">≈ 30 min</div></div>
+      <div class="mission-chip"><div class="chip-icon">🖥️</div><div class="chip-title">Bureautique</div><div class="chip-time">≈ 30 min</div></div>
+      <div class="mission-chip" style="background:var(--violet-clair)"><div class="chip-icon">🏟️</div><div class="chip-title">Culture Club</div><div class="chip-time">≈ 25 min</div></div>
+    </div>
+    <button class="btn btn-primary" id="btnStart" disabled onclick="go()">🚀 C'est parti !</button>
+  </div>
+</div>
+
+<!-- ═══ FRANÇAIS ═══ -->
+<div class="screen" id="screenFrancais">
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFrancais"></div></div>
+  <div id="qFrancais"></div>
+  <div class="mission-nav"><span class="question-counter" id="counterFrancais"></span><button class="btn btn-primary" onclick="next('francais')">Valider et continuer →</button></div>
+</div>
+<div class="screen" id="screenTrans1">
+  <div class="transition-card"><div class="emoji">✅</div><h2>Mission Français terminée !</h2><p>Bravo <span class="pN"></span> ! Vous avez traité le courrier du président. Prochaine étape : un coup de main sur l'informatique du club.</p><button class="btn btn-primary" onclick="startSec('numerique')">💻 Mission Culture Numérique →</button></div>
+</div>
+
+<!-- ═══ NUMÉRIQUE ═══ -->
+<div class="screen" id="screenNumerique">
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressNumerique"></div></div>
+  <div id="qNumerique"></div>
+  <div class="mission-nav"><span class="question-counter" id="counterNumerique"></span><button class="btn btn-primary" onclick="next('numerique')">Valider et continuer →</button></div>
+</div>
+<div class="screen" id="screenTrans2">
+  <div class="transition-card"><div class="emoji">👏</div><h2>Mission Numérique terminée !</h2><p>On enchaîne <span class="pN"></span> — on vérifie vos réflexes bureautiques !</p><button class="btn btn-primary" onclick="startSec('bureautique')">🖥️ Mission Bureautique →</button></div>
+</div>
+
+<!-- ═══ BUREAUTIQUE ═══ -->
+<div class="screen" id="screenBureautique">
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBureautique"></div></div>
+  <div id="qBureautique"></div>
+  <div class="mission-nav"><span class="question-counter" id="counterBureautique"></span><button class="btn btn-primary" onclick="next('bureautique')">Valider et continuer →</button></div>
+</div>
+<div class="screen" id="screenTrans3">
+  <div class="transition-card"><div class="emoji">🏟️</div><h2>Mission Bureautique terminée !</h2><p>Dernière mission <span class="pN"></span> — on va découvrir votre futur environnement de travail ! Pour celle-ci, <strong>vous aurez besoin d'internet</strong> pour chercher les réponses.</p><button class="btn btn-violet" onclick="startSec('club')">🔎 Mission Culture Club →</button></div>
+</div>
+
+<!-- ═══ CULTURE CLUB ═══ -->
+<div class="screen" id="screenClub">
+  <div class="progress-bar-wrap"><div class="progress-bar-fill fill-violet" id="progressClub"></div></div>
+  <div id="qClub"></div>
+  <div class="mission-nav"><span class="question-counter" id="counterClub"></span><button class="btn btn-violet" onclick="finish()">Terminer les missions →</button></div>
+</div>
+
+<!-- ═══ RÉSULTATS ═══ -->
+<div class="screen" id="screenResults">
+  <div class="results-card">
+    <h2>🎉 Bravo <span class="pN"></span> !</h2>
+    <p style="margin-bottom:30px">Vos 4 missions sont terminées. Voici votre bilan :</p>
+    <div class="total-score"><div class="total-label">Score global</div><div class="total-value" id="totalScore">0</div><div class="total-max">/ 40</div></div>
+    <div class="score-grid" id="scoreGrid"></div>
+    <div class="export-section">
+      <button class="btn btn-primary" onclick="copyBilan()">📋 Copier le bilan</button>
+      <button class="btn btn-secondary" onclick="window.print()">🖨️ Imprimer</button>
+    </div>
+  </div>
+
+
+</div>
+
+</div>
+<script>
+// ═══════════════════════════════════════════════════
+//  MISSION 1 — FRANÇAIS (27 questions) — INCHANGÉ
+// ═══════════════════════════════════════════════════
+const Q_FR=[
+  {type:'context-qcm',context:'<strong>📩 Mail du président — Moussa SIDIBE</strong><br><br><em>Objet : Bienvenue dans l\'équipe !</em><br><br>Bonjour,<br>Je suis ravi de vous accueillir au Noisy-le-Grand FC. Votre mission principale sera d\'assurer le secrétariat du club : gestion du courrier, accueil des partenaires, suivi des licences des joueurs et organisation des événements.<br>Notre prochain événement est le tournoi inter-quartiers du 22 mars. J\'aimerais que vous prépariez une lettre d\'invitation pour les clubs participants. Merci de me transmettre un premier jet avant vendredi.<br>Merci également de mettre à jour le fichier des licences U13 — il manque trois renouvellements.<br><br>Sportivement,<br>Moussa SIDIBE, Président',question:"D'après ce mail, quelle est la première tâche que le président vous demande ?",options:["Organiser le tournoi du 22 mars","Préparer une lettre d'invitation pour les clubs","Mettre à jour le fichier des licences U13","Appeler les partenaires du club"],correct:1,pts:.4},
+  {type:'qcm',question:"Quel est le délai donné par le président pour la lettre d'invitation ?",options:["Avant mercredi","Avant vendredi","Avant lundi prochain","Pas de délai précisé"],correct:1,pts:.3},
+  {type:'qcm',question:"Combien de renouvellements de licences U13 sont manquants ?",options:["Deux","Trois","Cinq","Ce n'est pas précisé"],correct:1,pts:.3},
+  {type:'qcm',question:"Que signifie « Sportivement » en fin de mail ?",options:["C'est une erreur de style","C'est une formule de politesse adaptée au contexte sportif","Cela signifie qu'il faut faire du sport","C'est un registre familier inapproprié"],correct:1,pts:.3},
+  {type:'qcm',question:"Le secrétaire envoie un courrier. Quelle phrase est correcte ?",options:["Nous vous envoyons la convoquation pour l'assemblée","Nous vous envoyons la convocation pour l'assemblée","Nous vous envoyont la convocation pour l'assemblée"],correct:1,pts:.4},
+  {type:'qcm',question:"Quelle phrase est sans faute ?",options:["Les joueurs on reçu leurs maillots","Les joueurs ont reçu leur maillots","Les joueurs ont reçu leurs maillots"],correct:2,pts:.4},
+  {type:'qcm',question:"Choisissez l'orthographe correcte :",options:["Le club acceuille 200 licenciés cette saison","Le club accueille 200 licenciés cette saison","Le club accueil 200 licenciés cette saison"],correct:1,pts:.4},
+  {type:'qcm',question:"Repérez la phrase correcte :",options:["J'ai fais le compte-rendu de la réunion","J'ai fait le compte-rendu de la réunion","J'ai fait le conte-rendu de la réunion"],correct:1,pts:.3},
+  {type:'qcm',question:"Quelle phrase ne contient aucune faute ?",options:["Le club à besoin de bénévoles pour ce week-end","Le club a besoin de bénévoles pour se week-end","Le club a besoin de bénévoles pour ce week-end"],correct:2,pts:.4},
+  {type:'qcm',question:"Choisissez la phrase correcte :",options:["Nous avons le plaisir de vous informé que le tournoi aura lieu le 22 mars","Nous avons le plaisir de vous informer que le tournoi aura lieu le 22 mars","Nous avons les plaisirs de vous informer que le tournoi aura lieu le 22 mars"],correct:1,pts:.4},
+  {type:'qcm',question:"Complétez : « Veuillez _____ ci-joint les documents demandés. »",options:["trouvez","trouver","trouvés"],correct:1,pts:.4},
+  {type:'qcm',question:"Complétez : « Les entraîneurs _____ satisfaits de la saison. »",options:["son","sont","sons"],correct:1,pts:.3},
+  {type:'qcm',question:"Complétez : « C'est l'association _____ j'ai contactée hier. »",options:["qui","que","dont"],correct:1,pts:.3},
+  {type:'qcm',question:"Complétez : « Les dossiers _____ vous avez besoin sont sur le bureau. »",options:["que","dont","lesquels"],correct:1,pts:.3},
+  {type:'qcm',question:"Complétez : « Demain, nous _____ la réunion à 10h. » (organiser, futur)",options:["organisons","organiserons","organiseront"],correct:1,pts:.4},
+  {type:'qcm',question:"Complétez : « Le match _____ à 15h samedi dernier. » (commencer, passé composé)",options:["a commencer","a commencé","est commencé"],correct:1,pts:.3},
+  {type:'qcm',question:"Complétez : « Il faut que je _____ au président avant ce soir. » (écrire, subjonctif)",options:["écrit","écrive","écrives"],correct:1,pts:.3},
+  {type:'qcm',question:"Complétez : « Quand j'_____ au club, le téléphone sonnait déjà. »",options:["arrivais","suis arrivé","Les deux sont possibles selon le sens"],correct:2,pts:.4},
+  {type:'free',question:"Le président vous demande d'envoyer un mail aux clubs invités au tournoi du 22 mars. Rédigez l'objet (le sujet) de ce mail :",placeholder:"Ex : Invitation au...",pts:.5},
+  {type:'free',question:"Rédigez une formule de politesse pour terminer un courrier officiel du club :",placeholder:"Ex : Veuillez agréer...",pts:.5},
+  {type:'qcm',question:"Quand on ajoute un fichier à un mail, on dit qu'on envoie…",options:["Une pièce détachée","Une pièce jointe","Un fichier collé","Une annexe postale"],correct:1,pts:.4},
+  {type:'qcm',question:"Le document qui résume les décisions prises en réunion s'appelle…",options:["Un rapport d'activité","Un ordre du jour","Un compte-rendu","Un devis"],correct:2,pts:.3},
+  {type:'qcm',question:"Quel registre de langue est adapté pour un courrier officiel à la mairie ?",options:["Familier : « Salut, ça roule ? »","Courant : « Bonjour, je vous écris pour… »","Soutenu : « Je me permets de solliciter votre bienveillante attention… »","Le courant ou le soutenu, selon le contexte"],correct:3,pts:.4},
+  {type:'qcm',question:"Que signifie « A.R. » dans « courrier recommandé avec A.R. » ?",options:["Attention Requise","Accusé de Réception","À Retourner","Adresse Réelle"],correct:1,pts:.3},
+  {type:'qcm',question:"Dans un courrier, que désigne le terme « objet » ?",options:["Le destinataire","Le résumé du sujet en une ligne","La signature","La date d'envoi"],correct:1,pts:.3},
+  {type:'qcm',question:"Quelle abréviation signifie « Pièces jointes » en bas d'un courrier ?",options:["P/O","N/Réf.","P.J.","C.C."],correct:2,pts:.3},
+  {type:'qcm',question:"Quelle est la bonne orthographe ?",options:["Les résultats du championnât","Les résultats du championnat","Les résultats du championnats"],correct:1,pts:.3},
+];
+
+// ═══════════════════════════════════════════════════
+//  MISSION 2 — CULTURE NUMÉRIQUE (20 questions) — INCHANGÉ
+// ═══════════════════════════════════════════════════
+const Q_NUM=[
+  {type:'qcm',question:"Vous devez vérifier les résultats du dernier match de l'équipe senior sur internet. Quel outil utilisez-vous en premier ?",options:["Le traitement de texte (Word)","Un moteur de recherche (Google, Bing…)","La messagerie du club","Le tableur Excel"],correct:1,pts:.5},
+  {type:'qcm',question:"Laquelle est une adresse de site internet valide ?",options:["www.noisy-fc","noisy-fc@gmail.com","www.noisy-fc.fr","http//noisy-fc"],correct:2,pts:.5},
+  {type:'qcm',question:"Que signifie le cadenas 🔒 dans la barre d'adresse d'un navigateur ?",options:["Le site est payant","Le site est réservé aux pros","La connexion est sécurisée (HTTPS)","Le site est en maintenance"],correct:2,pts:.5},
+  {type:'qcm',question:"Quel est le rôle d'un navigateur web (Chrome, Firefox, Edge) ?",options:["Créer des documents","Afficher des pages internet","Gérer les fichiers","Protéger contre les virus"],correct:1,pts:.5},
+  {type:'qcm',question:"Vous recevez la facture du sponsor par mail. Où la rangez-vous ?",options:["Sur le Bureau","Dans un dossier dédié (« Sponsors » ou « Factures »)","Dans la corbeille","Elle reste dans le mail"],correct:1,pts:.5},
+  {type:'qcm',question:"Quel nom de fichier est le mieux organisé ?",options:["doc1.pdf","facture sponsor mars 2026.pdf","Facture_Sponsor_NoisyFC_Mars2026.pdf","truc.pdf"],correct:2,pts:.5},
+  {type:'qcm',question:"Pour copier un fichier d'un dossier à un autre sur Windows :",options:["Ctrl+C puis Ctrl+V","Ctrl+X puis Ctrl+V","Ctrl+Z puis Ctrl+V","Ctrl+A puis Ctrl+V"],correct:0,pts:.5},
+  {type:'qcm',question:"Quelle extension correspond à un document texte modifiable ?",options:[".jpg",".mp3",".docx",".exe"],correct:2,pts:.5},
+  {type:'qcm',question:"Dans un e-mail, « CC » signifie :",options:["Courrier Confidentiel","Copie Carbone (copie visible)","Contact Commercial","Code Client"],correct:1,pts:.5},
+  {type:'qcm',question:"Pour envoyer un mail à 5 personnes sans qu'elles voient les adresses des autres :",options:["Champ « À »","Champ « CC »","Champ « CCI » (copie carbone invisible)","5 mails séparés"],correct:2,pts:.5},
+  {type:'qcm',question:"Quel objet de mail est le plus professionnel ?",options:["(pas d'objet)","coucou info match","Invitation — Tournoi inter-quartiers du 22 mars","URGENT LIRE SVP"],correct:2,pts:.5},
+  {type:'qcm',question:"Comment accéder à une pièce jointe « facture.pdf » reçue par mail ?",options:["Cliquer sur le lien dans le mail","Cliquer sur l'icône de la pièce jointe (trombone)","Répondre au mail","Transférer le mail"],correct:1,pts:.5},
+  {type:'qcm',question:"Un mail dit : « Urgent ! Cliquez ici et entrez votre mot de passe. » Que faites-vous ?",options:["Vous cliquez rapidement","Vous transférez à vos collègues","Vous ne cliquez pas — c'est du phishing","Vous répondez pour vérifier"],correct:2,pts:.5},
+  {type:'qcm',question:"Quel mot de passe est le plus sécurisé ?",options:["noisy2026","123456","Football!Noisy#93","motdepasse"],correct:2,pts:.5},
+  {type:'qcm',question:"Pourquoi faire des sauvegardes régulières ?",options:["Libérer de la mémoire","Accélérer l'ordinateur","Ne pas perdre les données en cas de panne","Pas nécessaire si l'ordi est récent"],correct:2,pts:.5},
+  {type:'qcm',question:"On vous prête une clé USB trouvée au secrétariat. Bonne pratique ?",options:["La brancher directement","La donner à un collègue","La faire analyser par un antivirus d'abord","La jeter"],correct:2,pts:.5},
+  {type:'qcm',question:"Pour publier le résultat du match, quel réseau est adapté ?",options:["LinkedIn","Instagram ou Facebook","Un mail groupé","Snapchat uniquement"],correct:1,pts:.5},
+  {type:'qcm',question:"Pour chercher un partenaire commercial, quel réseau professionnel ?",options:["TikTok","LinkedIn","Snapchat","Instagram"],correct:1,pts:.5},
+  {type:'qcm',question:"Avant de publier une photo de mineurs (école de foot), que vérifier ?",options:["Que la photo est jolie","Autorisation des parents (droit à l'image)","Accord de l'entraîneur","Rien, c'est public"],correct:1,pts:.5},
+  {type:'qcm',question:"Quelle info ne JAMAIS publier sur les réseaux du club ?",options:["Horaires d'entraînement","Résultats des matchs","Coordonnées personnelles d'un joueur","Programme du tournoi"],correct:2,pts:.5},
+];
+
+// ═══════════════════════════════════════════════════
+//  MISSION 3 — BUREAUTIQUE (19 questions) — INCHANGÉ
+// ═══════════════════════════════════════════════════
+const Q_BUR=[
+  {type:'auto-eval',tool:'Word (traitement de texte)',icon:'📝'},
+  {type:'qcm',question:"Dans Word, le raccourci pour mettre en gras :",options:["Ctrl+G","Ctrl+B","Ctrl+I","Ctrl+U"],correct:1,pts:.5},
+  {type:'qcm',question:"Pour enregistrer un document :",options:["Ctrl+S","Ctrl+E","Ctrl+P","Ctrl+N"],correct:0,pts:.5},
+  {type:'qcm',question:"Pour centrer un titre dans Word :",options:["Onglet Insertion","Onglet Accueil > Paragraphe","Onglet Mise en page","Clic droit > Propriétés"],correct:1,pts:.5},
+  {type:'qcm',question:"Pour insérer une image dans Word :",options:["Accueil > Coller","Insertion > Image","Fichier > Ouvrir","Révision > Commentaire"],correct:1,pts:.5},
+  {type:'qcm',question:"Ctrl+Z dans Word sert à :",options:["Zoomer","Fermer le document","Annuler la dernière action","Ouvrir un nouveau document"],correct:2,pts:.5},
+  {type:'auto-eval',tool:'Excel (tableur)',icon:'📊'},
+  {type:'qcm',question:"Dans Excel, une cellule est identifiée par :",options:["Un numéro (ex : 15)","Une lettre et un numéro (ex : A1)","Un nom libre","Une couleur"],correct:1,pts:.5},
+  {type:'qcm',question:"Pour additionner A1 à A10, la formule est :",options:["=ADD(A1:A10)","=SOMME(A1:A10)","=TOTAL(A1:A10)","=A1+A10"],correct:1,pts:.5},
+  {type:'qcm',question:"Pour trier des joueurs par ordre alphabétique :",options:["Ctrl+T","Données > Trier","Accueil > Police","Insertion > Graphique"],correct:1,pts:.5},
+  {type:'qcm',question:"Si une cellule affiche « ##### » :",options:["Erreur de formule","Colonne trop étroite","Cellule verrouillée","Fichier corrompu"],correct:1,pts:.5},
+  {type:'qcm',question:"Pour un total qui se met à jour automatiquement :",options:["Recalculer à la main","Utiliser une formule (=SOMME)","Copier-coller","Ajouter un commentaire"],correct:1,pts:.5},
+  {type:'auto-eval',tool:'PowerPoint (présentations)',icon:'📽️'},
+  {type:'qcm',question:"Pour ajouter une nouvelle diapositive :",options:["Fichier > Nouveau","Accueil > Nouvelle diapositive","Insertion > Image","Ctrl+N"],correct:1,pts:.5},
+  {type:'qcm',question:"Raccourci pour lancer la présentation plein écran :",options:["F1","F5","F12","Ctrl+P"],correct:1,pts:.5},
+  {type:'qcm',question:"Pour une présentation efficace :",options:["Beaucoup de texte par diapo","Images, mots-clés, mise en page aérée","Que des tableaux","Maximum de couleurs et polices"],correct:1,pts:.5},
+  {type:'auto-eval',tool:'Outlook / messagerie',icon:'📬'},
+  {type:'qcm',question:"Pour répondre à tous les destinataires d'un mail :",options:["Répondre","Répondre à tous","Transférer","Nouveau message"],correct:1,pts:.5},
+  {type:'qcm',question:"Le drapeau (🚩) sur un mail Outlook sert à :",options:["Signaler comme spam","Marquer comme important / à suivre","Supprimer","Archiver"],correct:1,pts:.5},
+];
+
+// ═══════════════════════════════════════════════════
+//  MISSION 4 — CULTURE CLUB (18 questions) — NOUVEAU
+//  L'apprenant doit chercher sur internet pour répondre
+// ═══════════════════════════════════════════════════
+const Q_CLUB=[
+  {q:"Cherchez sur internet : en quelle année le Noisy-le-Grand FC a-t-il été créé ?",action:"🔎 Tapez « Noisy-le-Grand Football Club » dans Google et cherchez la date de création.",opts:["1947","1957","1968","1975"],correct:2,pts:.55},
+  {q:"Trouvez le nom du district de football dont dépend la ville de Noisy-le-Grand.",action:"🔎 Cherchez « district football Noisy-le-Grand 93 » sur internet.",opts:["District de Paris","District de Seine-Saint-Denis","District du Val-de-Marne","District de Seine-et-Marne"],correct:1,pts:.55},
+  {q:"Quel est le code postal de Noisy-le-Grand ?",action:"🔎 Si vous ne le savez pas, vérifiez sur internet.",opts:["93100","93160","93200","93300"],correct:1,pts:.55},
+  {q:"Trouvez le nom du maire actuel (ou la maire actuelle) de Noisy-le-Grand.",action:"🔎 Cherchez « maire Noisy-le-Grand » sur internet.",opts:["Laurent Rivoire","Brigitte Marsigny","Michel Pajon","Olivier Klein"],correct:1,pts:.55},
+  {q:"L'adresse du Noisy-le-Grand FC est Place de la Libération. Dans quelle ville se trouve cette place ?",action:"💡 Pas besoin de chercher — c'est dans le nom du club !",opts:["La Courneuve","Noisy-le-Grand","Bobigny","Montreuil"],correct:1,pts:.55},
+  {q:"Cherchez : quel est le numéro de téléphone de la Fédération Française de Football (FFF) ?",action:"🔎 Tapez « FFF numéro téléphone contact » dans Google.",opts:["01 44 31 73 00","01 42 67 89 00","01 53 94 22 00","01 40 20 50 00"],correct:0,pts:.55},
+  {q:"La Seine-Saint-Denis porte le numéro de département :",action:"💡 C'est un classique — mais vérifiez si vous doutez.",opts:["92","93","94","95"],correct:1,pts:.55},
+  {q:"Cherchez sur internet : combien de communes compte le département de la Seine-Saint-Denis ?",action:"🔎 Cherchez « nombre communes Seine-Saint-Denis ».",opts:["30","36","40","46"],correct:2,pts:.55},
+  {q:"La formation se déroule à Skills Accompagnement, située à La Courneuve. Dans quel département est La Courneuve ?",action:"💡 Même département que Noisy-le-Grand !",opts:["Hauts-de-Seine (92)","Seine-Saint-Denis (93)","Val-de-Marne (94)","Val-d'Oise (95)"],correct:1,pts:.55},
+  {q:"Cherchez : quel est le stade principal de Noisy-le-Grand ?",action:"🔎 Cherchez « stade Noisy-le-Grand football ».",opts:["Stade Léo Lagrange","Stade des Bas Heurts","Stade de la Butte Verte","Stade Jean Bouin"],correct:0,pts:.55},
+  {q:"Trouvez sur internet : quel est le site officiel de la FFF ?",action:"🔎 Cherchez « site officiel FFF ».",opts:["www.football.fr","www.fff.fr","www.ligue1.fr","www.footfrance.com"],correct:1,pts:.55},
+  {q:"Cherchez : quelle est la ligne de RER qui dessert Noisy-le-Grand ?",action:"🔎 Cherchez « RER Noisy-le-Grand ».",opts:["RER B","RER A","RER C","RER D"],correct:1,pts:.55},
+  {q:"Trouvez : quel est le nom de la gare RER située à Noisy-le-Grand - Mont d'Est ?",action:"🔎 Cherchez « gare Noisy-le-Grand ».",opts:["Noisy-le-Grand — Mont d'Est","Noisy-le-Grand — Centre","Noisy-le-Grand — Ville","Noisy — Place de la Libération"],correct:0,pts:.55},
+  {q:"Cherchez sur internet : dans quelle division évolue actuellement l'équipe senior du Noisy-le-Grand FC ?",action:"🔎 Cherchez « Noisy-le-Grand FC classement » ou consultez le site du district 93.",opts:["National 3","Régional 1","Régional 2 / Départemental 1","Départemental 2"],correct:2,pts:.55},
+  {q:"Cherchez : combien d'habitants compte environ la ville de Noisy-le-Grand ?",action:"🔎 Cherchez « population Noisy-le-Grand ».",opts:["Environ 35 000","Environ 50 000","Environ 67 000","Environ 85 000"],correct:2,pts:.55},
+  {q:"Trouvez sur internet : en quelle année la ville de Noisy-le-Grand a-t-elle été rendue célèbre par un bâtiment futuriste visible dans des films (les Arènes de Picasso) ?",action:"🔎 Cherchez « Arènes de Picasso Noisy-le-Grand ».",opts:["1975","1984","1992","2001"],correct:1,pts:.55},
+  {q:"Cherchez : quel est le site internet de la mairie de Noisy-le-Grand ?",action:"🔎 Tapez « mairie Noisy-le-Grand site officiel ».",opts:["www.noisylegrand.fr","www.mairie-noisy.com","www.ville-noisylegrand.fr","www.noisy93.fr"],correct:0,pts:.55},
+  {q:"Dans le football amateur, une licence est un document obligatoire pour jouer. Cherchez : qui délivre les licences ?",action:"🔎 Cherchez « licence football amateur qui délivre ».",opts:["La mairie","Le club directement","La FFF via le club","L'assurance du joueur"],correct:2,pts:.55},
+];
+
+// ═══════════════════════════════════════════════════
+//  MOTEUR
+// ═══════════════════════════════════════════════════
+let pName='';
+const ans={francais:{},numerique:{},bureautique:{},club:{}};
+const aeData={};
+const secMap={francais:Q_FR,numerique:Q_NUM,bureautique:Q_BUR,club:Q_CLUB};
+const secLabels={francais:'Mission 1/4 — Français',numerique:'Mission 2/4 — Culture Numérique',bureautique:'Mission 3/4 — Bureautique',club:'Mission 4/4 — Culture Club'};
+const secScreenId={francais:'Francais',numerique:'Numerique',bureautique:'Bureautique',club:'Club'};
+
+document.getElementById('inputNom').addEventListener('input',function(){document.getElementById('btnStart').disabled=this.value.trim().length<2});
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
+
+function go(){pName=document.getElementById('inputNom').value.trim();document.querySelectorAll('.pN').forEach(e=>e.textContent=pName);startSec('francais')}
+
+function startSec(sec){
+  render(sec,secMap[sec]);
+  show('screen'+secScreenId[sec]);
+  document.getElementById('progressPill').textContent=secLabels[sec];
+}
+
+function render(sec,qs){
+  const id=secScreenId[sec];
+  const c=document.getElementById('q'+id); c.innerHTML=''; let n=0;
+  qs.forEach((q,i)=>{
+    const card=document.createElement('div'); card.className='question-card'+(sec==='club'?' club-q':''); card.id=`q-${sec}-${i}`;
+
+    if(q.type==='auto-eval'){
+      card.innerHTML=`<div class="q-number">${q.icon} Auto-positionnement</div><div class="q-text">Comment vous situez-vous sur <strong>${q.tool}</strong> ?</div><div class="auto-eval"><div class="level" onclick="pickLv(this,'${sec}',${i},0)"><div class="level-icon">🔴</div><div class="level-text">Je ne connais pas</div></div><div class="level" onclick="pickLv(this,'${sec}',${i},1)"><div class="level-icon">🟠</div><div class="level-text">J'ai déjà utilisé</div></div><div class="level" onclick="pickLv(this,'${sec}',${i},2)"><div class="level-icon">🟢</div><div class="level-text">Je suis à l'aise</div></div></div>`;
+    } else if(q.type==='free'){
+      n++; card.innerHTML=`<div class="q-number">Question ${n}</div><div class="q-text">${q.question}</div><textarea class="free-input" rows="2" placeholder="${q.placeholder||''}" oninput="saveFr('${sec}',${i},this.value)"></textarea>`;
+    } else {
+      // QCM standard ou club
+      n++;
+      const isClub = sec==='club';
+      const qData = isClub ? q : q;
+      const question = isClub ? q.q : q.question;
+      const opts = isClub ? q.opts : q.options;
+      const ctx = (!isClub && q.type==='context-qcm' && q.context) ? `<div class="q-context">${q.context}</div>` : '';
+      const action = (isClub && q.action) ? `<div class="q-action">${q.action}</div>` : '';
+      const numClass = isClub ? ' violet' : '';
+      const label = isClub ? `Question ${n} / ${Q_CLUB.length} — 🔎 CHERCHEZ` : `Question ${n}`;
+
+      const optsHtml = opts.map((o,oi)=>`<div class="option" onclick="pick(this,'${sec}',${i},${oi})"><div class="radio"></div><span>${o}</span></div>`).join('');
+      card.innerHTML=`<div class="q-number${numClass}">${label}</div>${ctx}${action}<div class="q-text">${question}</div><div class="options">${optsHtml}</div>`;
+    }
+    c.appendChild(card);
+  });
+  upd(sec);
+}
+
+function pick(el,sec,qi,oi){el.closest('.question-card').querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');el.closest('.question-card').classList.add('answered');ans[sec][qi]=oi;upd(sec)}
+function pickLv(el,sec,qi,lv){el.closest('.question-card').querySelectorAll('.level').forEach(l=>l.classList.remove('selected'));el.classList.add('selected');el.closest('.question-card').classList.add('answered');aeData[`${sec}-${qi}`]=lv;upd(sec)}
+function saveFr(sec,qi,v){ans[sec][qi]=v;document.getElementById(`q-${sec}-${qi}`).classList.toggle('answered',v.trim().length>3);upd(sec)}
+
+function upd(sec){
+  const qs=secMap[sec]; let done=0;
+  qs.forEach((q,i)=>{
+    if(q.type==='auto-eval'&&aeData[`${sec}-${i}`]!==undefined) done++;
+    else if(q.type==='free'&&ans[sec][i]&&ans[sec][i].trim().length>3) done++;
+    else if(q.type!=='auto-eval'&&q.type!=='free'&&ans[sec][i]!==undefined) done++;
+  });
+  const pct=Math.round(done/qs.length*100);
+  const id=secScreenId[sec];
+  const bar=document.getElementById('progress'+id);
+  if(bar) bar.style.width=pct+'%';
+  const counter=document.getElementById('counter'+id);
+  if(counter) counter.textContent=`${done} / ${qs.length} répondues`;
+}
+
+function next(sec){
+  if(sec==='francais'){show('screenTrans1');document.getElementById('progressPill').textContent='✅ Français terminé'}
+  if(sec==='numerique'){show('screenTrans2');document.getElementById('progressPill').textContent='✅ Numérique terminé'}
+  if(sec==='bureautique'){show('screenTrans3');document.getElementById('progressPill').textContent='✅ Bureautique terminé'}
+}
+
+function finish(){showRes()}
+
+// ═══════════════════════════════════════════════════
+//  SCORING
+// ═══════════════════════════════════════════════════
+function calcSec(qs,sec){
+  let s=0,mx=0;
+  qs.forEach((q,i)=>{
+    if(q.type==='auto-eval') return;
+    const pts = q.pts || 0;
+    mx += pts;
+    if(q.type==='free'){ if(ans[sec][i]&&ans[sec][i].trim().length>5) s+=pts*.5; }
+    else { if(ans[sec][i]===q.correct) s+=pts; }
+  });
+  return mx>0 ? Math.round(s/mx*100)/10 : 0;
+}
+
+function calcBur(){
+  let s=0,mx=0;
+  Q_BUR.forEach((q,i)=>{if(q.type==='auto-eval')return;if(q.pts)mx+=q.pts;if(ans.bureautique[i]===q.correct)s+=q.pts});
+  let qcm=mx>0?s/mx*10:0;
+  let aS=0,aC=0;
+  Object.keys(aeData).forEach(k=>{if(k.startsWith('bureautique')){aS+=aeData[k];aC++}});
+  let ae=aC>0?aS/aC/2*10:0;
+  return Math.round((qcm*.7+ae*.3)*10)/10;
+}
+
+function calcClub(){
+  let ok=0;
+  Q_CLUB.forEach((q,i)=>{if(ans.club[i]===q.correct)ok++});
+  return Math.round(ok/Q_CLUB.length*100)/10;
+}
+
+function sc(v){return v>=7?'score-green':v>=4?'score-orange':'score-red'}
+
+
+// ENVOI AUTOMATIQUE GOOGLE SHEET
+var SHEET_URL='https://script.google.com/macros/s/AKfycbxmqueUUDjoFAvaYAAyzbSg4hn3x73gD8hh68q0oxSJpOoHVQEgs9eaxQy_Jdl8rGjk/exec';
+function sendToSheet(sF,sN,sB,sC){
+  var url=SHEET_URL+'?prenom='+encodeURIComponent(pName)+'&parcours=POSITIONNEMENT_1&jour=POSITIONNEMENT_GENERAL&score_francais='+sF+'&score_numerique='+sN+'&score_bureautique='+sB+'&score_club='+sC+'&score='+Math.round((sF+sN+sB+sC)*10)/10+'&total=40';
+  var img=new Image(); img.src=url;
+}
+
+function showRes(){
+  const sF=calcSec(Q_FR,'francais'), sN=calcSec(Q_NUM,'numerique'), sB=calcBur(), sC=calcClub();
+  const tot=Math.round((sF+sN+sB+sC)*10)/10;
+  document.getElementById('totalScore').textContent=tot.toFixed(1);
+  document.getElementById('scoreGrid').innerHTML=[
+    {l:'📧 Français',v:sF},{l:'💻 Culture Numérique',v:sN},{l:'🖥️ Bureautique',v:sB},{l:'🏟️ Culture Club',v:sC}
+  ].map(s=>`<div class="score-item ${sc(s.v)}"><div class="score-label">${s.l}</div><div class="score-value">${s.v.toFixed(1)}</div><div class="score-max">/ 10</div></div>`).join('');
+  sendToSheet(sF,sN,sB,sC);
+  show('screenResults');
+  document.getElementById('progressPill').textContent='🎉 Missions terminées !';
+}
+
+function copyBilan(){
+  const sF=calcSec(Q_FR,'francais'),sN=calcSec(Q_NUM,'numerique'),sB=calcBur(),sC=calcClub();
+  const tot=(sF+sN+sB+sC).toFixed(1);
+  let ae='';
+  [['Word',0],['Excel',6],['PowerPoint',12],['Outlook',16]].forEach(([t,idx])=>{
+    const k=`bureautique-${idx}`,lvs=['🔴 Ne connaît pas','🟠 A déjà utilisé','🟢 À l\'aise'];
+    ae+=`  ${t}: ${aeData[k]!==undefined?lvs[aeData[k]]:'Non renseigné'}\n`;
+  });
+  let fr='';
+  Q_FR.forEach((q,i)=>{if(q.type==='free'&&ans.francais[i])fr+=`  Q: ${q.question}\n  R: ${ans.francais[i]}\n\n`});
+  const txt=`BILAN POSITIONNEMENT — MISSION 1\nNoisy-le-Grand FC × Skills Accompagnement\n${'═'.repeat(48)}\nApprenant : ${pName}\nDate : ${new Date().toLocaleDateString('fr-FR')}\n\nSCORES\n${'─'.repeat(40)}\n📧 Français :          ${sF.toFixed(1)} / 10\n💻 Culture Numérique : ${sN.toFixed(1)} / 10\n🖥️ Bureautique :      ${sB.toFixed(1)} / 10\n🏟️ Culture Club :     ${sC.toFixed(1)} / 10\n${'─'.repeat(40)}\nTOTAL :                ${tot} / 40\n\nAUTO-POSITIONNEMENT BUREAUTIQUE\n${ae}\nRÉPONSES LIBRES (Français)\n${fr||'  (aucune)\n'}\n${'═'.repeat(48)}`;
+  navigator.clipboard.writeText(txt).then(()=>alert('✅ Bilan copié !')).catch(()=>{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('✅ Bilan copié !')});
+}
+</script>
+</body>
+</html>
