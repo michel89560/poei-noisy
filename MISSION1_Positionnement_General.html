@@ -381,7 +381,7 @@ function sc(v){return v>=7?'score-green':v>=4?'score-orange':'score-red'}
 // ENVOI AUTOMATIQUE GOOGLE SHEET
 var SHEET_URL='https://script.google.com/macros/s/AKfycbxmqueUUDjoFAvaYAAyzbSg4hn3x73gD8hh68q0oxSJpOoHVQEgs9eaxQy_Jdl8rGjk/exec';
 function sendToSheet(sF,sN,sB,sC){
-  var url=SHEET_URL+'?prenom='+encodeURIComponent(pName)+'&parcours=POSITIONNEMENT_1&jour=POSITIONNEMENT_GENERAL&score_francais='+sF+'&score_numerique='+sN+'&score_bureautique='+sB+'&score_club='+sC+'&score='+Math.round((sF+sN+sB+sC)*10)/10+'&total=40';
+  var url=SHEET_URL+'?type=positionnement&prenom='+encodeURIComponent(pName)+'&module=POSITIONNEMENT_1&score_francais='+sF+'&score_numerique='+sN+'&score_bureautique='+sB+'&score_club='+sC;
   var img=new Image(); img.src=url;
 }
 

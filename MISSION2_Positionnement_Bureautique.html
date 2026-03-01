@@ -279,7 +279,7 @@ function sc(v){return v>=7?'score-word':v>=4?'score-excel':'score-ppt'}
 // ENVOI AUTOMATIQUE GOOGLE SHEET
 var SHEET_URL='https://script.google.com/macros/s/AKfycbxmqueUUDjoFAvaYAAyzbSg4hn3x73gD8hh68q0oxSJpOoHVQEgs9eaxQy_Jdl8rGjk/exec';
 function sendToSheet(sW,sE,sP){
-  var url=SHEET_URL+'?prenom='+encodeURIComponent(pName)+'&parcours=POSITIONNEMENT_2&jour=POSITIONNEMENT_BUREAUTIQUE&score_word='+sW+'&score_excel='+sE+'&score_ppt='+sP+'&score='+Math.round((sW+sE+sP)*10)/10+'&total=30';
+  var url=SHEET_URL+'?type=positionnement&prenom='+encodeURIComponent(pName)+'&module=POSITIONNEMENT_2&score_word='+sW+'&score_excel='+sE+'&score_ppt='+sP;
   var img=new Image(); img.src=url;
 }
 
